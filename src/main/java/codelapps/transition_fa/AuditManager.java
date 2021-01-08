@@ -1,11 +1,8 @@
 package codelapps.transition_fa;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -24,7 +21,7 @@ public class AuditManager {
   public void addRecord(String visitorName, Date timeOfVisit) throws IOException {
     String[] filepaths = this.fileSystem.getFilesList(this.directoryPath);
     Arrays.sort(filepaths);
-
+    
     String newRecord = visitorName + ";" + timeOfVisit;
 
     if (filepaths.length == 0) {
@@ -38,7 +35,6 @@ public class AuditManager {
     String currentFileName = currentFilePath.getFileName().toString();
     currentFileName = currentFileName.substring(0, currentFileName.indexOf("."));
     int currentIndex = Integer.parseInt(currentFileName.split("_")[1]);
-
     if (lines.size() < this.maxEntriesPerFile) {
       lines.add(newRecord);
       this.fileSystem.writeAllLines(currentFilePath, lines);
@@ -46,6 +42,7 @@ public class AuditManager {
       int newIndex = currentIndex + 1;
       String newFileName = "audit_" + newIndex + ".txt";
       Path newFilePath = Path.of(this.directoryPath, newFileName);
+      System.out.println(newRecord.getBytes());
       this.fileSystem.writeNewFile(newFilePath, newRecord.getBytes());
     }
 
@@ -55,8 +52,9 @@ public class AuditManager {
     FileSystem fileSystem = new FileSystem();
     AuditManager auditManager = new AuditManager(3, "assets", fileSystem);
     try {
-      auditManager.addRecord("Andrew", new Date());
-    } catch (IOException e) {
+      Date date = new SimpleDateFormat("dd/MM/yyyy").parse("6/27/2020");
+      auditManager.addRecord("Codelapps", date);
+    } catch (Exception e) {
       e.printStackTrace();
     }
   }
